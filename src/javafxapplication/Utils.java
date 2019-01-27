@@ -3,6 +3,7 @@ package javafxapplication;
 import com.sun.javafx.scene.control.skin.TableHeaderRow;
 import com.sun.javafx.scene.control.skin.TableViewSkinBase;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.EventHandler;
@@ -13,7 +14,8 @@ import javafx.util.Callback;
 
 /**
  *
- * @author student
+ * @author Talipov S.N.
+ * @version 2
  */
 public class Utils {
 
@@ -31,19 +33,19 @@ public class Utils {
     static public void buildTable(TableView tableView, int rowCount, int colCount,
             int rowHeight, int colWidth, boolean editable, String[] titles) {
 
-// Установка разрешения на редактирование
+        // Установка разрешения на редактирование
         tableView.setEditable(editable);
 
-// Установка высоты строк
+        // Установка высоты строк
         tableView.setFixedCellSize(rowHeight);
 
-// Выбираем выделение в режиме одиночной ячейки
+        // Выбираем выделение в режиме одиночной ячейки
         tableView.getSelectionModel().setCellSelectionEnabled(true);
 
-// Добавляем в таблицу пустой список с ячейками нужной размерностью rowCount * colCount
+        // Добавляем в таблицу пустой список с ячейками нужной размерностью rowCount * colCount
         tableView.setItems(FXCollections.observableArrayList(new String[rowCount][colCount]));
 
-// Убираем заголовок у таблицы
+        // Убираем заголовок у таблицы если требуется
         if (titles == null) {
             tableView.skinProperty().addListener((a, b, newSkin) -> {
                 TableHeaderRow headerRow = ((TableViewSkinBase) newSkin).getTableHeaderRow();
@@ -53,7 +55,21 @@ public class Utils {
             });
         }
 
-// Создаем столбцы в таблице
+        // Запрещаем перемещать колонки в таблице
+        tableView.widthProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> source, Number oldWidth, Number newWidth) {
+                TableHeaderRow header = (TableHeaderRow) tableView.lookup("TableHeaderRow");
+                header.reorderingProperty().addListener(new ChangeListener<Boolean>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                        header.setReordering(false);
+                    }
+                });
+            }
+        });
+
+        // Создаем столбцы в таблице
         for (int col = 0; col < colCount; col++) {
             TableColumn tableColumn;
             if ((titles == null)) {
@@ -66,13 +82,13 @@ public class Utils {
                 }
             }
 
-// Устанавливаем столбцу запрет сортировки, запрет изменения размера и значение ширины
+            // Устанавливаем столбцу запрет сортировки, запрет изменения размера и значение ширины
             tableColumn.setSortable(false);
             tableColumn.setResizable(false);
             tableColumn.setPrefWidth(colWidth);
             tableColumn.setMinWidth(colWidth);
 
-// Делаем обработчкик для отображения столбца в таблице
+            // Делаем обработчкик для отображения столбца в таблице
             int columnNumber = col;
             tableColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<String[], String>, ObservableValue<String>>() {
                 @Override
@@ -81,7 +97,7 @@ public class Utils {
                 }
             });
 
-// Делаем обработчик для редактирования ячеек в таблице
+            // Делаем обработчик для редактирования ячеек в таблице
             tableColumn.setCellFactory(TextFieldTableCell.forTableColumn());
             tableColumn.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent>() {
                 @Override
@@ -92,7 +108,7 @@ public class Utils {
 
             });
 
-// Добавляем столбец в таблицу
+            // Добавляем столбец в таблицу
             tableView.getColumns().add(tableColumn);
         }
 
