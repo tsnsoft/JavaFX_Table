@@ -1,15 +1,13 @@
-package javafxapplication;
+package kz.tsn.javafx.table;
 
-import com.sun.javafx.scene.control.skin.TableHeaderRow;
-import com.sun.javafx.scene.control.skin.TableViewSkinBase;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.EventHandler;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.control.skin.TableHeaderRow;
 import javafx.util.Callback;
 
 /**
@@ -44,30 +42,6 @@ public class Utils {
 
         // Добавляем в таблицу пустой список с ячейками нужной размерностью rowCount * colCount
         tableView.setItems(FXCollections.observableArrayList(new String[rowCount][colCount]));
-
-        // Убираем заголовок у таблицы если требуется
-        if (titles == null) {
-            tableView.skinProperty().addListener((a, b, newSkin) -> {
-                TableHeaderRow headerRow = ((TableViewSkinBase) newSkin).getTableHeaderRow();
-                headerRow.setVisible(false);
-                headerRow.setPrefHeight(0);
-                headerRow.setMaxHeight(0);
-            });
-        }
-
-        // Запрещаем перемещать колонки в таблице
-        tableView.widthProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> source, Number oldWidth, Number newWidth) {
-                TableHeaderRow header = (TableHeaderRow) tableView.lookup("TableHeaderRow");
-                header.reorderingProperty().addListener(new ChangeListener<Boolean>() {
-                    @Override
-                    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                        header.setReordering(false);
-                    }
-                });
-            }
-        });
 
         // Создаем столбцы в таблице
         for (int col = 0; col < colCount; col++) {
@@ -112,6 +86,20 @@ public class Utils {
             tableView.getColumns().add(tableColumn);
         }
 
-    }
+        // Запрещаем перемещать колонки в таблице
+        tableView.widthProperty().addListener(
+                (ObservableValue<? extends Number> source, Number oldWidth, Number newWidth) -> {
+                    TableHeaderRow header = (TableHeaderRow) tableView.lookup("TableHeaderRow");
+                    header.reorderingProperty().addListener(
+                            (ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+                                header.setReordering(false);
+                            });
+                });
 
+        // Убираем заголовок у таблицы 
+        if (titles == null)  {
+            tableView.getStyleClass().add("noheader");
+        }
+
+    }
 }

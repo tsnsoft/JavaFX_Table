@@ -1,4 +1,4 @@
-# JavaFX_Table
-Работа с таблицами в JavaFX
+# TSN_JavaFX_Table
+Пример работы с таблицами в JavaFX
 
-![Screenshot](JavaFX_Table.png)
+![Screenshot](screenshot.png)

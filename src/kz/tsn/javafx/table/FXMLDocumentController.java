@@ -1,4 +1,4 @@
-package javafxapplication;
+package kz.tsn.javafx.table;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -21,10 +21,11 @@ public class FXMLDocumentController implements Initializable {
         Utils.buildTable(table, 8, 6, 24, 90, true, null);
 //        Utils.buildTable(table, 8, 6, 24, 90, true, new String[] {"1","2","3","4","5","6"}); // Вариант с шапкой
         doRandom(null);
-        
+
         //table.getItems().add(new String[6]); // Так можно добавить строку
         //table.getItems().remove(table.getItems().size()-1); // Так можно удалить строку
-        //table.refresh(); // Обновить таблицу на экране
+        table.refresh(); // Обновить таблицу на экране
+
     }
 
     @FXML
